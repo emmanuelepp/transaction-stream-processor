@@ -416,3 +416,34 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Docker
+.docker/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# dotnet user secrets
+secrets.json
+appsettings.Development.json
+appsettings.Local.json
+
+# OpenTelemetry / Grafana local data
+observability/grafana/data/
+observability/prometheus/data/
+
+# PostgreSQL 
+postgres-data/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Kafka 
+kafka-data/
+zookeeper-data/
