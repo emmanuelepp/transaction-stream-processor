@@ -1,0 +1,17 @@
+name: Docker
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Producer
+        run: docker build -f src/Producer/Dockerfile -t producer .
+
+      - name: Build Consumer
+        run: docker build -f src/Consumer/Dockerfile -t consumer .

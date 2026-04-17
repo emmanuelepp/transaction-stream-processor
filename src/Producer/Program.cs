@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Producer;
+using Observability;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -14,6 +15,8 @@ var host = Host.CreateDefaultBuilder(args)
         {
             BootstrapServers = bootstrapServers
         };
+        var otlpEndpoint = context.Configuration["OTEL__ENDPOINT"] ?? "http://localhost:4317";
+        services.AddTelemetry("producer", otlpEndpoint);
         var kafkaProducer = new ProducerBuilder<string, string>(producerConfig).Build();
         services.AddSingleton<TransactionGenerator>();
         services.AddHostedService<ProducerWorker>();
