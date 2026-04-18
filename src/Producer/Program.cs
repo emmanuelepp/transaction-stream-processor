@@ -1,25 +1,24 @@
 ﻿using Confluent.Kafka;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Producer;
 using Observability;
+using Producer;
 
-var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((context, services) =>
-    {
-        var bootstrapServers = context.Configuration["KAFKA:BOOTSTRAPSERVERS"] ?? "localhost:9092";
-        var topic = context.Configuration["KAFKA:TOPIC"] ?? "transactions";
-        var producerConfig = new ProducerConfig
-        {
-            BootstrapServers = bootstrapServers
-        };
-        var otlpEndpoint = context.Configuration["OTEL:ENDPOINT"] ?? "http://localhost:4317";
-        services.AddTelemetry("producer", otlpEndpoint);
-        var kafkaProducer = new ProducerBuilder<string, string>(producerConfig).Build();
-        services.AddSingleton<TransactionGenerator>();
-        services.AddHostedService<ProducerWorker>();
-        services.AddSingleton<KafkaProducer>(sp => new KafkaProducer(kafkaProducer, topic));
-    })
-    .Build();
+var builder = WebApplication.CreateBuilder(args);
 
-await host.RunAsync();
+var bootstrapServers = builder.Configuration["KAFKA:BOOTSTRAPSERVERS"] ?? "localhost:9092";
+var topic = builder.Configuration["KAFKA:TOPIC"] ?? "transactions";
+var otlpEndpoint = builder.Configuration["OTEL:ENDPOINT"] ?? "http://localhost:4317";
+
+var producerConfig = new ProducerConfig { BootstrapServers = bootstrapServers };
+var kafkaProducer = new ProducerBuilder<string, string>(producerConfig).Build();
+
+builder.Services.AddTelemetry("producer", otlpEndpoint);
+builder.Services.AddSingleton<TransactionGenerator>();
+builder.Services.AddSingleton<KafkaProducer>(sp => new KafkaProducer(kafkaProducer, topic));
+builder.Services.AddHostedService<ProducerWorker>();
+
+var app = builder.Build();
+app.MapPrometheusScrapingEndpoint();
+
+await app.RunAsync();
