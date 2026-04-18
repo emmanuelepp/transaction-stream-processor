@@ -7,11 +7,11 @@ using Observability;
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        var bootstrapServers = context.Configuration["KAFKA__BOOTSTRAPSERVERS"] ?? "localhost:9092";
-        var topic = context.Configuration["KAFKA__TOPIC"] ?? "transactions";
-        var groupId = context.Configuration["KAFKA__GROUPID"] ?? "finstream-consumer";
-        var connectionString = context.Configuration["DATABASE__CONNECTIONSTRING"] ?? "Host=localhost;Database=finstream;Username=finstream;Password=finstream";
-        var otlpEndpoint = context.Configuration["OTEL__ENDPOINT"] ?? "http://localhost:4317";
+    var bootstrapServers = context.Configuration["KAFKA:BOOTSTRAPSERVERS"] ?? "localhost:9092";
+    var topic = context.Configuration["KAFKA:TOPIC"] ?? "transactions";
+    var groupId = context.Configuration["KAFKA:GROUPID"] ?? "finstream-consumer";
+    var connectionString = context.Configuration["DATABASE:CONNECTIONSTRING"] ?? "Host=localhost;Database=finstream;Username=finstream;Password=finstream";
+    var otlpEndpoint = context.Configuration["OTEL:ENDPOINT"] ?? "http://localhost:4317";
         var consumerConfig = new ConsumerConfig
         {
             BootstrapServers = bootstrapServers,

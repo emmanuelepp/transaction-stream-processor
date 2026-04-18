@@ -7,15 +7,13 @@ using Observability;
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        var bootstrapServers = context.Configuration["KAFKA__BOOTSTRAPSERVERS"]
-        ?? "localhost:9092";
-        var topic = context.Configuration["KAFKA__TOPIC"]
-            ?? "transactions";
+        var bootstrapServers = context.Configuration["KAFKA:BOOTSTRAPSERVERS"] ?? "localhost:9092";
+        var topic = context.Configuration["KAFKA:TOPIC"] ?? "transactions";
         var producerConfig = new ProducerConfig
         {
             BootstrapServers = bootstrapServers
         };
-        var otlpEndpoint = context.Configuration["OTEL__ENDPOINT"] ?? "http://localhost:4317";
+        var otlpEndpoint = context.Configuration["OTEL:ENDPOINT"] ?? "http://localhost:4317";
         services.AddTelemetry("producer", otlpEndpoint);
         var kafkaProducer = new ProducerBuilder<string, string>(producerConfig).Build();
         services.AddSingleton<TransactionGenerator>();
